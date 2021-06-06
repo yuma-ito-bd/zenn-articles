@@ -1,0 +1,23 @@
+{
+  "name": "angular-di",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuma-ito-bd/zenn-articles.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yuma-ito-bd/zenn-articles/issues"
+  },
+  "homepage": "https://github.com/yuma-ito-bd/zenn-articles#readme",
+  "description": "",
+  "dependencies": {
+    "zenn-cli": "^0.1.82"
+  }
+}
