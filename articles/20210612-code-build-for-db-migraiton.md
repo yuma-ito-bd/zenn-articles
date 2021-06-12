@@ -3,7 +3,7 @@ title: "[AWS CodePipeline] デプロイ時にCodeBuildを用いてDBマイグレ
 emoji: "👏"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["AWS", "CodePipeline", "CodeBuild"]
-published: false
+published: true
 ---
 
 ## この記事で説明すること
