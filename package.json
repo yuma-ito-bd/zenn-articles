@@ -18,6 +18,6 @@
   "homepage": "https://github.com/yuma-ito-bd/zenn-articles#readme",
   "description": "",
   "dependencies": {
-    "zenn-cli": "^0.1.82"
+    "zenn-cli": "^0.1.85"
   }
 }
