@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "help": "zenn --help",
-    "new-article": "zenn new:article"
+    "new-article": "zenn new:article",
+    "preview": "zenn preview"
   },
   "keywords": [],
   "author": "",
