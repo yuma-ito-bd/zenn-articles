@@ -8,7 +8,7 @@ published: false
 
 
 ## はじめに
-タイトルの通りなのですが、Google Fit という健康管理アプリに音声で体重を記録できる Alexa スキルを開発してみました。（※スキルは非公開）
+タイトルの通りなのですが、Google Fit という健康管理アプリに音声で体重を記録できる Alexa スキル「たいレコ」を開発してみました。（※スキルは非公開）
 
 動機としては、Alexa スキルを一度開発してみたかったのと、声だけで体重を記録できるようになったら面白いかなと思ったからです。
 
@@ -27,10 +27,17 @@ https://youtu.be/cnYnPNduE_M
 
 ![構成図](https://storage.googleapis.com/zenn-user-upload/ff8f6ee8344a-20220326.png)
 
+ユーザーが「65 キロと記録して」とリクエストすると、Alexa の対話モデルが音声を認識し Lambda 関数にリクエストを送ります。そして、Google Fit API を呼ぶことで体重データを記録します。最後にユーザーに応答を音声で返して完了です。
+アプリからは Google Fit API 経由で記録された体重データを参照することができます。 
+
 ソースコードはこちら。
 https://github.com/yuma-ito-bd/alexa-weight-record-skill
 
 以下、Alexa スキルの開発方法に関して、今回開発した体重記録スキル「たいレコ」の例を交えながら簡単に説明します。
+:::message
+Alexa スキルの開発だけで量が多くなってしまった（~~気力、体力が尽きてしまった~~）ので、Google Fit API については説明しません。以下のスクラップを読んでいただくか、ソースコードをご覧ください。
+https://zenn.dev/yuma_ito_bd/scraps/5360873211bcad
+:::
 
 ## Alexa スキルについて
 
@@ -68,6 +75,7 @@ https://developer.amazon.com/ja/blogs/alexa/post/31c9fd71-f34f-49fc-901f-d74f4f2
 今回の体重記録スキル「たいレコ」スキルの対話モデルを作成していきます。（チュートリアルと被る箇所は適宜省略します）
 
 まず、[開発者コンソール](https://developer.amazon.com/alexa/console/ask)画面の「スキル」タブから「スキルの作成」を押し、新しくスキルを作成します。
+![開発者コンソール](https://storage.googleapis.com/zenn-user-upload/45cf7b48f513-20220326.png)
 
 スキル名を入力し、追加する対話モデルの種類とアプリケーションロジックにあたるバックエンドリソースをホスティングする方法を選択します。
 
@@ -81,6 +89,7 @@ https://developer.amazon.com/ja/blogs/alexa/post/31c9fd71-f34f-49fc-901f-d74f4f2
 
 #### スキルの呼び出し名
 次にスキルの呼び出し名を設定します。スキルの呼び出し名とは、スキルを呼び出す際に「Alexa、○○を開いて」と呼びかける際の○○のフレーズです。デフォルトではスキル名が設定されています。
+![スキルの呼び出し名](https://storage.googleapis.com/zenn-user-upload/c41a2b788d5d-20220326.png)
 
 #### 対話モデル
 次に、対話モデルの構築を行います。
@@ -107,27 +116,35 @@ Web アプリケーションでの MVC フレームワークの C (Controller) �
 まず、たいレコでは「体重を記録する」というアクションが必要なので、RegisterIntent というインテントを定義しましょう。
 
 サイドバーから「カスタム＞対話モデル＞インテント」をクリックします。次に「インテントを追加」をクリックします。
+![インテントを追加](https://storage.googleapis.com/zenn-user-upload/ff212eca49a8-20220326.png)
 
 「RegisterIntent」と入力し、「カスタムインテントを作成」をクリックします。
+![カスタムインテントを作成](https://storage.googleapis.com/zenn-user-upload/9f34e10d6c62-20220326.png)
 
 次に、「サンプル発話」にユーザーの音声リクエストのパターンを設定します。1つのインテントに対して、複数の音声パターンを割り当てることができます。（このパターンを多数用意することで、ユーザーが異なる表現をしても柔軟に応答することができ、UXの向上につながるかと思います。）
 
-今回は以下のパターンを設定します。
+今回は以下のパターンを設定します。（数字は漢数字で入力します）
 
-- 「60キロと記録して」
-- 「60キロ」（数値だけ言うパターン）
+- 「六十キロと記録して」
+- 「六十キロ」（数値だけ言うパターン）
 
-これだけでは「60キロ」しか記録することができないので、スロットを定義することで任意の体重を記録できるようにします。
+![サンプル発話の追加1](https://storage.googleapis.com/zenn-user-upload/ca0caa48a08c-20220326.png)
+
+これだけでは「六十キロ（60キロ）」しか記録することができないので、スロットを定義することで任意の体重を記録できるようにします。
 
 「インテントスロット」にスロット名とスロットタイプを以下のように入力します。
 
 - スロット名: `weight`
 - スロットタイプ: `AMAZON.NUMBER` （数値を識別できる標準スロットタイプ）
 
+![スロットの追加](https://storage.googleapis.com/zenn-user-upload/1def50b6f7ef-20220326.png)
+
 スロットを定義したので、サンプル発話を以下のように修正します。
 
 - `{weight}`キロと記録して
 - `{weight}`キロ
+
+![サンプル発話2](https://storage.googleapis.com/zenn-user-upload/88c68c70ac95-20220326.png)
 
 そして、「モデルを保存」を押して設定を保存します。
 
@@ -269,7 +286,7 @@ export interface RequestHandler<Input, Output> {
 
 #### 自前の Lambda を利用する場合
 
-今回は諸事情があり、自分で用意した Lambda を利用しました。（その理由については次節にて）
+今回は諸事情があり、自分で用意した Lambda を利用しました。（その理由については「（おまけ）Google Fit API の NPM パッケージが含まれていると、Alexa-hosted Lambda のデプロイエラーになる」にて）
 
 https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/host-a-custom-skill-as-an-aws-lambda-function.html
 
@@ -323,11 +340,33 @@ Lambda 関数単体でテストをしたい場合、テストイベントのテ�
 これを実行して、LaunchIntent の応答が返ってきたらOK！
 ![Lambdaテスト](https://storage.googleapis.com/zenn-user-upload/c0d5bcdd64cc-20220226.png)
 
-## （詰まったところ）
-デプロイエラー
+## （おまけ）Google Fit API の NPM パッケージが含まれていると、Alexa-hosted Lambda のデプロイエラーになる
+詳しい原因はわかっていないのですが、Google Fit API の NPM パッケージが `package.json` に含まれている状態、かつホスティング方法に Alexa-hosted (Node.js) を選択した状態ではデプロイエラーになりました。
 
-## 学んだこと
+`package.json` は以下でした。
+```json:package.json
+  "dependencies": {
+    "ask-sdk": "^2.12.0",
+    "ask-sdk-core": "^2.12.0",
+    "ask-sdk-model": "^1.37.2",
+    "googleapis": "^95.0.0",
+    "open": "^8.4.0",
+    "server-destroy": "^1.0.1"
+  }
+```
 
-- Alexa スキルを自分の手で開発することができた。
-- OAuth 2.0 の仕組みについて理解できた。
-- Terraform でインフラリソースの構成管理をする方法を知った。
+自分で Lambda 関数を用意することでこのエラーを回避しました。
+
+## さいごに
+
+作ってみた感想としては、
+
+- Alexa スキルは意外と簡単に作ることができて面白かった。
+- スキル開発を通して新しい技術について知ることができた。（OAuth 2.0 による認可, Terraform でのインフラ構成管理）
+- Google Fit API の仕様を理解して、コーディングするのが意外と時間がかかった。。。
+- 小数を含む体重も聞き取ってくれて、音声認識の精度の高さに驚いた
+- 過去に記録した体重を Alexa から確認する方法は一工夫が必要と感じた（単に数値をつらつらと言われてもあまり嬉しくないなと）
+
+以上です。Alexa スキルの開発は楽しかったので是非皆さんもやってみてください！
+
+最後まで読んでいただいてありがとうございました🙇‍♂️
