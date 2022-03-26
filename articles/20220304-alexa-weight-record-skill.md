@@ -3,7 +3,7 @@ title: "Google Fit アプリに音声で体重を記録できる Alexa スキル
 emoji: "🔊"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["alexa", "googlefit"]
-published: false
+published: true
 ---
 
 
