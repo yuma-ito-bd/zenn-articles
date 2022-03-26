@@ -1,5 +1,5 @@
 ---
-title: "Google Fit APIを使って声で体重を記録・管理できるAlexaスキルを開発してみた"
+title: "Google Fit アプリに音声で体重を記録できる Alexa スキルを開発してみた"
 emoji: "🔊"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["alexa", "googlefit"]
@@ -8,15 +8,29 @@ published: false
 
 
 ## はじめに
-タイトルの通りなのですが、
+タイトルの通りなのですが、Google Fit という健康管理アプリに音声で体重を記録できる Alexa スキルを開発してみました。（※スキルは非公開）
 
-Alexa を使って、声だけで体重を管理、記録できるようにしたい。
+動機としては、Alexa スキルを一度開発してみたかったのと、声だけで体重を記録できるようになったら面白いかなと思ったからです。
 
-スキルは非公開です。
 
-### 実現したいこと
+デモ動画はこちらです。
 
-構成図を載せる
+https://youtu.be/cnYnPNduE_M
+
+こんな感じで Alexa （Echo Show 5）に体重を伝えると、Google Fit に体重が記録されます。
+
+![Google Fit アプリ](https://storage.googleapis.com/zenn-user-upload/c4976d447765-20220326.png =300x)
+
+### 構成
+
+以下のような構成で実現しています。
+
+![構成図](https://storage.googleapis.com/zenn-user-upload/ff8f6ee8344a-20220326.png)
+
+ソースコードはこちら。
+https://github.com/yuma-ito-bd/alexa-weight-record-skill
+
+以下、Alexa スキルの開発方法に関して、今回開発した体重記録スキル「たいレコ」の例を交えながら簡単に説明します。
 
 ## Alexa スキルについて
 
@@ -26,9 +40,9 @@ Alexa スキルとは Alexa 向けのアプリのことです。例えば天気�
 > ユーザー「アレクサ、今日の天気は？」
 アレクサ「東京の天気は晴れです。」
 
-のように Alexa に話しかけることで、Alexa が質問内容に応じて返事をしてくれます。
+のように Alexa に話しかけることで、Alexa が質問内容に応じて返事をしてくれます。（厳密には Alexa が搭載されたデバイスやアプリとやり取りをしますが、簡略のため音声インターフェースも含めて Alexa と呼ぶことにします）
 
-Alexa スキルを自分で開発することができ、Alexa Skill Kit として様々なツールが用意されています。
+Alexa スキルは自分で開発することができ、Alexa Skill Kit として様々なツールが用意されています。
 https://developer.amazon.com/ja-JP/alexa/alexa-skills-kit
 
 ### Alexa スキル開発の流れ
@@ -51,9 +65,9 @@ https://developer.amazon.com/ja/blogs/alexa/post/31c9fd71-f34f-49fc-901f-d74f4f2
 ### 「たいレコ」のモデルを構築してみる
 
 #### スキルの新規作成
-今回の「たいレコ」スキルの対話モデルを作成していきます。（チュートリアルと被る箇所は適宜省略します）
+今回の体重記録スキル「たいレコ」スキルの対話モデルを作成していきます。（チュートリアルと被る箇所は適宜省略します）
 
-[開発者コンソール](https://developer.amazon.com/alexa/console/ask)画面の「スキル」タブから「スキルの作成」を押し、新しくスキルを作成します。
+まず、[開発者コンソール](https://developer.amazon.com/alexa/console/ask)画面の「スキル」タブから「スキルの作成」を押し、新しくスキルを作成します。
 
 スキル名を入力し、追加する対話モデルの種類とアプリケーションロジックにあたるバックエンドリソースをホスティングする方法を選択します。
 
@@ -63,7 +77,7 @@ https://developer.amazon.com/ja/blogs/alexa/post/31c9fd71-f34f-49fc-901f-d74f4f2
 
 - Alexa-hosted (Node.js): Alexa が用意してくれる Node.js の Lambda です。自分でリソースを用意しなくて良いので、チュートリアルとして利用したり、手軽に作成したい場合はこちらを選択すると良いと思います。
 - Alexa-hosted (Python): 同じく Alexa が用意してくれる Python の Lambda です。Python で構築したい方はこちらを選択。
-- ユーザー定義のプロビジョニング: 自分でリソースを用意した上で、Alexa の対話モデルからリクエストを投げる方法です。バックエンドリソースは自分好みに選択できるので、Lambda に限らず、EC2 や ECS でも可能ですし、AWS のサービスではなく Azure や GCP を利用することもできます。（Alexa スキルくらいの簡単なアプリケーションなら Lambda で十分なパターンが多いと思いますが。）
+- ユーザー定義のプロビジョニング: 自分でリソースを用意した上で、Alexa の対話モデルからリクエストを投げる方法です。バックエンドリソースは自分好みに選択できるので、Lambda に限らず、EC2 や ECS でも可能ですし、AWS のサービスではなく Azure や GCP でもオンプレでも利用することもできます。（Alexa スキルくらいの簡単なアプリケーションなら Lambda で十分なパターンが多いと思います。）
 
 #### スキルの呼び出し名
 次にスキルの呼び出し名を設定します。スキルの呼び出し名とは、スキルを呼び出す際に「Alexa、○○を開いて」と呼びかける際の○○のフレーズです。デフォルトではスキル名が設定されています。
@@ -74,7 +88,7 @@ https://developer.amazon.com/ja/blogs/alexa/post/31c9fd71-f34f-49fc-901f-d74f4f2
 
 https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/create-the-interaction-model-for-your-skill.html
 
-ここで、重要となる概念が2つあります。「インテント」と「スロット」です。
+ここで、重要な概念が2つあります。「インテント」と「スロット」です。
 
 インテント (Intent) とは、ユーザーのリクエストを満たすアクションのことです。アプリケーションロジックはインテントに対応した処理を実行します。ユーザーの音声によるリクエストをインテントに変換することで、アプリケーションロジックが処理を行えるようになります。
 
@@ -125,12 +139,190 @@ Web アプリケーションでの MVC フレームワークの C (Controller) �
 
 ### アプリケーションロジックの開発
 
-SDK
+対話モデルの構築が完了したので、次はアプリケーションロジックの開発を行います。
+
+アプリケーションロジックは先述の通り、アプリケーションをホスティングするバックエンドリソースや使用する言語は自由に選ぶことができます。
+
+Lambda を利用する場合は以下を参照。
+https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/host-a-custom-skill-as-an-aws-lambda-function.html
+
+それ以外のリソース を利用する場合は以下を参照。
+https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/host-a-custom-skill-as-a-web-service.html
+
+スキルの作成時に Alexa-hosted (Node.js) または Alexa-hosted (Python) を選択した場合は、「コードエディタ」タブからアプリケーションコードの作成を行うことができます。（ローカル環境でコーディングし、zip ファイルでソースコードをアップロードすることも可能です）
+
+アプリケーションロジックの開発では、以下の SDK が用意されているのでそれを活用すると効率よく開発できると思います。
+
+- [alexa/alexa\-skills\-kit\-sdk\-for\-nodejs](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs)
+- [alexa/alexa\-skills\-kit\-sdk\-for\-python](https://github.com/alexa/alexa-skills-kit-sdk-for-python)
+
+今回は Node.js 用の SDK を利用して TypeScript で開発しました。
+
+この SDK に関してもチュートリアル「[初めてのスキル開発 — ASK SDK for Node\.js ドキュメント](https://ask-sdk-for-nodejs.readthedocs.io/ja/latest/Developing-Your-First-Skill.html)」が用意されています。
+
+必要な NPM パッケージをインストールします。
+
+```bash
+npm install --save ask-sdk
+```
+
+Lambda で最初に呼び出される `handler` 関数を作成します。
+```typescript: index.ts
+import { SkillBuilders } from 'ask-sdk-core';
+import {
+    cancelAndStopIntentHandler,
+    errorHandler,
+    helpIntentHandler,
+    launchRequestHandler,
+    registerIntentHandler,
+    sessionEndedRequestHandler,
+} from './app/alexaHanders';
+
+const handler = SkillBuilders.custom()
+    .addRequestHandlers(
+        launchRequestHandler,
+        registerIntentHandler,
+        helpIntentHandler,
+        cancelAndStopIntentHandler,
+        sessionEndedRequestHandler
+    )
+    .addErrorHandlers(errorHandler)
+    .lambda();
+
+export { handler };
+```
+
+`ask-sdk-core` に含まれる `SkillBuilders` クラスを利用することで、簡単に Lambda 用のハンドラ関数を作成することができます。
+
+ここで、`addRequestHandlers` 関数で、いくつかのリクエストハンドラと呼ばれる関数が呼び出されています。
+リクエストハンドラこそが Alexa スキルの要となっており、スキルによって大きく処理が変わってきます。
+
+たいレコでは、`registerIntentHandler` リクエストハンドラで体重の記録を行っています。
+
+```ts:alexaHanders.ts
+export const registerIntentHandler: RequestHandler = {
+    canHandle(handlerInput: HandlerInput): boolean {
+        const { request } = handlerInput.requestEnvelope;
+        return (
+            request.type === 'IntentRequest' &&
+            request.intent.name === 'RegisterIntent'
+        );
+    },
+    async handle(handlerInput: HandlerInput): Promise<Response> {
+        // 体重の数値を取り出して登録する
+        const weight = (handlerInput.requestEnvelope.request as IntentRequest)
+            .intent.slots?.weight?.value;
+
+        if (weight == null) {
+            const speakText =
+                'すみません。体重を聞き取れませんでした。もう一度教えてください。';
+            return handlerInput.responseBuilder
+                .speak(speakText)
+                .reprompt(speakText)
+                .withSimpleCard('エラー', speakText)
+                .getResponse();
+        }
+
+        const dataSourceId = process.env.DATA_SOURCE_ID;
+        if (dataSourceId == null) throw new Error('DATA_SOURCE_ID is not set');
+
+        const oauth2Client = getOAuth2ClientForLambda();
+        const usecase = new RegisterBodyData(oauth2Client, dataSourceId);
+        usecase.exec(Number(weight), new Date());
+
+        const speechText = `体重を${weight}キロで記録しました。また明日も記録してくださいね！`;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .withSimpleCard('体重記録完了！', speechText)
+            .getResponse();
+    },
+};
+
+```
+
+リクエストハンドラの型 `RequestHandler` は以下です。
+
+```ts
+export interface RequestHandler<Input, Output> {
+    canHandle(input: Input): Promise<boolean> | boolean;
+    handle(input: Input): Promise<Output> | Output;
+}
+```
+
+- `canHandle`: リクエストが自身のインテントかどうかを判断します。`registerIntentHandler` ではインテントの名前が先程開発者コンソールで登録した `RegisterIntent` であるかどうかを判断しています。
+- `handle`: `canHandle` が `true` の場合に実行する処理です。`registerIntentHandler` ではリクエストから値を取り出して、Google Fit に登録する処理を実行し、レスポンスを生成しています。
+
+リクエストハンドラを複数用意することで、様々なユーザーの要求に応えることができるようになります。
+
+### アプリケーションロジックのデプロイ
+
+アプリケーションロジックとなるコードの作成が完了したら、アプリケーションとしてデプロイしましょう。
+
+#### Alexa-hosted を選択した場合
+スキルの作成時に Alexa-hosted (Node.js) または Alexa-hosted (Python) を選択した場合は、「コードエディタ」タブで直接コードを生成するか、「Import Code」から zip ファイルでソースコードをインポートすることができます。
+
+![コードのインポート](https://storage.googleapis.com/zenn-user-upload/19539b1f0139-20220326.png)
+
+そして、「デプロイ」ボタンを押すと Lambda 関数が自動的に作成されてアプリケーションをデプロイすることができます。（とても楽です）
 
 
+#### 自前の Lambda を利用する場合
 
-## Google Fit API について
-## Alexa スキルの開発手順
+今回は諸事情があり、自分で用意した Lambda を利用しました。（その理由については次節にて）
+
+https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/host-a-custom-skill-as-an-aws-lambda-function.html
+
+まずは AWS で Lambda 関数を作成し、アプリケーションをデプロイしてください。（私は Terraform を利用して Lambda 関数を作成しました。）
+作成した Lambda の ARN をコピーしておきます。
+![Lambdaの作成](https://storage.googleapis.com/zenn-user-upload/e22540fc560b-20220226.png)
+
+:::message
+私は東京リージョンで Lambda 関数を作成しましたが、日本の場合は米国西部（オレゴン）(`us-west-2`) が最適だそうです。東京リージョンでも利用は可能です。
+（参考：[カスタムスキルをAWS Lambda関数としてホスティングする \| Alexa Skills Kit](https://developer.amazon.com/ja-JP/docs/alexa/custom-skills/host-a-custom-skill-as-an-aws-lambda-function.html#select-the-optimal-region-for-your-aws-lambda-function)）
+:::
+
+次に、開発者コンソールの「ビルド」タブ＞カスタム＞エンドポイントを開いて、作成したLambdaのARNを入力します。
+
+![ARNの入力](https://storage.googleapis.com/zenn-user-upload/1e46ed2d700c-20220226.png)
+
+この状態で「エンドポイントを保存」をクリックすると以下のエラーが発生してしまいます。
+
+![エンドポイント保存エラー](https://storage.googleapis.com/zenn-user-upload/ec47327c35ef-20220226.png)
+
+まだ Lambda 関数を呼び出すために必要な権限を Alexa スキルに与えていないためです。
+
+Alexa の開発者コンソールにある「スキルID」をコピーし、もう一度AWSコンソールに戻り、Lambda 関数の「トリガーを追加」から Alexa スキル ID を設定してください。
+
+![トリガーの追加](https://storage.googleapis.com/zenn-user-upload/236df5772ba0-20220226.png)
+
+そして、開発者コンソールの「エンドポイントを保存」をクリックすると成功しました！
+
+![エンドポイント保存成功](https://storage.googleapis.com/zenn-user-upload/742b6e058c13-20220226.png)
+
+### スキルのテスト
+
+これで Alexa スキルの準備が整ったのでスキルのテストをしましょう。
+
+開発者コンソールの「テスト」タブからテストを行うことができます。
+マイクボタンを押し続けて話すか話す言葉を入力します。
+
+![Alexaスキルのテスト](https://storage.googleapis.com/zenn-user-upload/47de806ac781-20220226.png)
+※数字は漢数字で入力する必要があります。
+
+できましたー！🎉🎉🎉
+
+また、Echo Show 5 などの Alexa 搭載デバイスを持っている場合は、公開していなくてもデバイスからテストを行うことができます。（開発者コンソールでログインしているアカウントとデバイスでログインしているアカウントが同じである必要があります）
+
+#### Lambda 関数単体でのテスト（補足）
+
+Lambda 関数単体でテストをしたい場合、テストイベントのテンプレートに `alexa-skills-kit-start-session`（ LaunchRequest を送るイベント）が用意されているので、それを利用できます。
+
+![Lambdaテストイベント](https://storage.googleapis.com/zenn-user-upload/be1699929c67-20220226.png)
+
+これを実行して、LaunchIntent の応答が返ってきたらOK！
+![Lambdaテスト](https://storage.googleapis.com/zenn-user-upload/c0d5bcdd64cc-20220226.png)
+
 ## （詰まったところ）
 デプロイエラー
 
