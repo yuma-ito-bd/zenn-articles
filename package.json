@@ -22,5 +22,8 @@
   "description": "",
   "dependencies": {
     "zenn-cli": "^0.1.85"
+  },
+  "devDependencies": {
+    "textlint": "^13.3.2"
   }
 }
