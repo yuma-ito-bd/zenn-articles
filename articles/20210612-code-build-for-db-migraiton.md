@@ -25,7 +25,7 @@ DBマイグレーションの部分の拡大図は以下です。
 ![](https://storage.googleapis.com/zenn-user-upload/9c96ec4192e83056544fcd82.png)
 
 ## 主に利用するAWSリソース
-- CodeBuild （DBマイグレーションを実行するため）
+- CodeBuild（DBマイグレーションを実行するため）
 - CodePipelineとソースアーティファクト用のS3バケット
 - RDS（マイグレーション対象のDB）
 - VPC, サブネット、セキュリティーグループなど
@@ -39,7 +39,7 @@ DBマイグレーションの部分の拡大図は以下です。
 1. CodePipelineにMigrationステージを作成、CodeBuildを新しく作成します。（デプロイステージよりも先）
     - 「環境」＞「追加設定」でVPCとprivateサブネットを指定します。サブネットは上記で用意したprivateサブネットです。
     ![](https://storage.googleapis.com/zenn-user-upload/c961647330a83cffe1ea6bd7.png)
-    - `buildspec.yml`を作成します。`buildspec.yml`はCodeBuild内で実行するコマンドや設定を記載したファイルです。CodeCommitのリポジトリに含める場合は、「buildspec ファイルを使用する」を選択します。私はビルド用の`buildspec.yml`と区別するため、ファイル名を`buildspec-migration.yml`としました。コマンドには、マイグレーションに必要な依存パッケージのインストールとマイグレーション実行コマンドを記述します。
+    - `buildspec.yml`を作成します。`buildspec.yml`はCodeBuild内で実行するコマンドや設定を記載したファイルです。CodeCommitのリポジトリに含める場合は、「buildspecファイルを使用する」を選択します。私はビルド用の`buildspec.yml`と区別するため、ファイル名を`buildspec-migration.yml`としました。コマンドには、マイグレーションに必要な依存パッケージのインストールとマイグレーション実行コマンドを記述します。
         ```yml:buildspec-migration.yml
         version: 0.2
 
