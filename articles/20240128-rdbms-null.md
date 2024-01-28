@@ -124,7 +124,7 @@ $ SELECT * FROM users ORDER BY name IS NULL ASC, name ASC;
 | 1   | Taro |
 | 3   |      |
 ```
-こうすると、`name`カラムがNULLをであるレコードが最後になり、2, 1, 3という順番で出力される。
+こうすると、`name`カラムがNULLであるレコードが最後になり、2, 1, 3という順番で出力される。
 
 `DESC`の場合は3, 1, 2という順番になる。
 ```sql
@@ -262,7 +262,7 @@ $ SELECT * FROM users ORDER BY name DESC;
 | 2   | Jiro |
 ```
 
-NULLの順番を指定したい場合は、`NULLS FIRST`, `NULLS LAST`を以下のように追加します。
+NULLの順番を指定したい場合は、`NULLS FIRST`, `NULLS LAST`を以下のように追加する。
 
 ```sql
 $ SELECT * FROM users ORDER BY name ASC NULLS FIRST;
