@@ -3,7 +3,7 @@ title: "MySQL, PostgreSQLのnullに関する比較"
 emoji: "🥹"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ['mysql', 'postgresql']
-published: false
+published: true
 ---
 
 ## 概要
