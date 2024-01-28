@@ -294,5 +294,4 @@ https://docs.oracle.com/cd/F19136_01/sqlrf/Oracle-Compliance-To-Core-SQL2011.htm
 ## 最後に
 
 MySQLとPostgreSQLのNULLの扱いに関して比較して解説しました。
-業務でMySQLのNULLについて調べた際、ふと「他のRDBMSだとどうなのだろうか」を思い調べてみたら、
-予想外に異なる点があったのでとても良い機会になりました。
+業務でMySQLのNULLについて調べた際、ふと「他のRDBMSだとどうなのだろうか」を思い調べてみたら、予想外に異なる点があったのでとても良い機会になりました。
