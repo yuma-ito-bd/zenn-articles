@@ -124,7 +124,7 @@ $ SELECT * FROM users ORDER BY name IS NULL ASC, name ASC;
 | 1   | Taro |
 | 3   |      |
 ```
-こうすると、`name`カラムがNULLをであるレコードが最後になり、2, 1, 3という順番で出力される。
+こうすると、`name`カラムがNULLであるレコードが最後になり、2, 1, 3という順番で出力される。
 
 `DESC`の場合は3, 1, 2という順番になる。
 ```sql
@@ -262,7 +262,7 @@ $ SELECT * FROM users ORDER BY name DESC;
 | 2   | Jiro |
 ```
 
-NULLの順番を指定したい場合は、`NULLS FIRST`, `NULLS LAST`を以下のように追加します。
+NULLの順番を指定したい場合は、`NULLS FIRST`, `NULLS LAST`を以下のように追加する。
 
 ```sql
 $ SELECT * FROM users ORDER BY name ASC NULLS FIRST;
@@ -294,5 +294,4 @@ https://docs.oracle.com/cd/F19136_01/sqlrf/Oracle-Compliance-To-Core-SQL2011.htm
 ## 最後に
 
 MySQLとPostgreSQLのNULLの扱いに関して比較して解説しました。
-業務でMySQLのNULLについて調べた際、ふと「他のRDBMSだとどうなのだろうか」を思い調べてみたら、
-予想外に異なる点があったのでとても良い機会になりました。
+業務でMySQLのNULLについて調べた際、ふと「他のRDBMSだとどうなのだろうか」を思い調べてみたら、予想外に異なる点があったのでとても良い機会になりました。
