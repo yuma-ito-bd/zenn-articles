@@ -1,6 +1,14 @@
 {
-    "rules": {
-        "preset-japanese": true,
-        "preset-ja-spacing": true
+  "rules": {
+    "preset-japanese": {
+      "no-doubled-joshi": {
+        "severity": "warning"
+      }
+    },
+    "preset-ja-spacing": {
+      "ja-space-between-half-and-full-width": {
+        "severity": "warning"
+      }
     }
+  }
 }
