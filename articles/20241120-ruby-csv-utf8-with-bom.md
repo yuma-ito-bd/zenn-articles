@@ -67,6 +67,10 @@ Ruby 3.3.4の環境で検証しました。
 ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin23]
 ```
 
+紹介するサンプルコードは以下でも参照できます。
+
+https://github.com/yuma-ito-bd/zenn-articles/tree/997ccda4eab3b4b8c7183c5f53f3de874e64daaa/scripts/20241120-ruby-csv-utf8-with-bom
+
 ### 1. `CSV.read`で`encoding: 'bom|utf-8'`を使って読み込む
 
 まずはじめは`CSV.read`メソッドの呼び出しに`encoding: 'bom|utf-8'`オプションを指定する方法です。
