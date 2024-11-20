@@ -3,7 +3,7 @@ title: "RubyでBOMつきUTF-8のCSVを正しく読み込む方法3選"
 emoji: "🦔"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["ruby"]
-published: false
+published: true
 ---
 
 ## 問題：`CSV.read`では列情報を正しく読み込むことができなかった
