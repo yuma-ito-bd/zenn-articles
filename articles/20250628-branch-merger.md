@@ -4,6 +4,7 @@ emoji: "📌"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["githubactions"]
 published: false
+publication_name: "arm_techblog"
 ---
 
 ## 概要
