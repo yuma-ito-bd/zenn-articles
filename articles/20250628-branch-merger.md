@@ -31,6 +31,10 @@ publication_name: "arm_techblog"
 /merge staging
 ```
 
+GitHub上での利用イメージは以下の通りです。
+
+![GitHub上での利用イメージ](https://storage.googleapis.com/zenn-user-upload/64e18b8b988b-20250630.png)
+
 ## なぜ作ろうと思ったのか
 
 ### ちょっとした悩み
