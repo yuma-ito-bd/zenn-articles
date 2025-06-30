@@ -10,14 +10,14 @@ publication_name: "arm_techblog"
 ## 概要
 フィッツプラス システム開発部の伊藤です。
 
-今回の記事では、GitHub Actionsを使って、ブランチのマージ作業を効率化する方法について紹介します。
+今回の記事では、GitHub Actionsを使ってブランチのマージ作業を効率化する方法について紹介します。
 日頃の開発業務で発生するちょっとした手間を減らし、開発のスピードを上げるための工夫です。
 
 ## Branch Mergerワークフロー
 
 ブランチのマージ作業を行うGitHub Actionsワークフローを「Branch Merger」と名付けました。
 
-このワークフローは、GitHubのプルリクエスト内で下記のようにコメントすることで起動します。
+このワークフローはGitHubのプルリクエスト内で下記のようにコメントすることで起動します。
 
 ```
 /merge <マージ先のブランチ名>
@@ -25,16 +25,82 @@ publication_name: "arm_techblog"
 
 上記のコメントをすると、プルリクエストのブランチが`<マージ先のブランチ名>`ブランチにマージされます。
 
-例えば、
+例えば以下のコメントでは、プルリクエストのブランチが`staging`ブランチにマージされます。
 
 ```
 /merge staging
 ```
 
-とコメントすると、プルリクエストのブランチが`staging`ブランチにマージされます。
+GitHub上での利用イメージは以下の通りです。
 
-## GitHub Actionsワークフローのコード
+![GitHub上での利用イメージ](https://storage.googleapis.com/zenn-user-upload/64e18b8b988b-20250630.png)
 
+## なぜ作ろうと思ったのか
+
+### ちょっとした悩み
+フィッツプラスでは、動作検証用のステージング環境を用意しています。
+開発用のブランチを`staging`ブランチにマージするとデプロイ処理が走り、ステージング環境に開発中の機能を反映させることができます。
+
+ブランチ運用のイメージは以下です。
+
+```mermaid
+gitGraph
+  checkout main
+  commit
+  branch feature1
+  branch staging
+  checkout feature1
+  commit
+  commit
+  checkout staging
+  merge feature1
+  checkout main
+  merge feature1
+  branch feature2
+  checkout feature2
+  commit
+  checkout staging
+  merge feature2
+  checkout main
+  merge feature2
+```
+
+そのため、開発中のブランチを`staging`ブランチへマージすることが多いのですが、その前に自動テストなどのCIが通るまで待つ必要があります。CIが通るまでの間、別のブランチで開発やレビューを進めています。
+
+そして、いざCIが通って開発中のブランチをマージする際、`git switch`でブランチを切り替えたり、作業中のコードを`git stash`したりする手間がかかります。それが小さな悩みでした。
+
+その小さな悩みを解決するために、今回ご紹介した「Branch Merger」ワークフローを作成しました。
+
+### メリット
+
+このワークフローによって、ブランチのマージ作業が楽になります。
+
+具体的なシチュエーションは以下です。
+
+- ローカル環境で別の開発作業を行っていても、ブランチを切り替える必要がありません。
+  - `git worktree`コマンドを使ってマージ作業を行うこともできますが、コメント1つでマージできるのは便利です。
+- DependabotやDevinが作ったプルリクエストをローカル環境にプルして、マージする手間が省けます。
+  - DependabotやRenovateなどのライブラリ更新ツールやDevinなどの生成AIが作ったプルリクエストをGitHub上からマージすることができます。
+
+
+## GitHub Actionsワークフローの実装
+
+### 準備：GitHub Appの作成
+
+事前にGitHub Appを作成＆インストールしておきます。
+
+GitHub Appの作成方法は、GitHubのドキュメントもしくは弊社のテックブログを参照してください。
+
+https://docs.github.com/ja/apps/building-github-apps/creating-a-github-app
+
+https://zenn.dev/arm_techblog/articles/202506-claude-code-github-actions-init#3.-%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0github-app%E3%81%AE%E4%BD%9C%E6%88%90
+
+フィッツプラスでは、ステージング環境へのデプロイは`push`イベントで起動するワークフローが行います。
+`git push`時にワークフローの`push`イベントを発火するため、GitHub Appを利用しています。
+
+もし`push`イベントによって起動するワークフローがない場合はGitHub Appを使わずに、`GITHUB_TOKEN`を使っても問題ありません。
+
+### ワークフローのソースコード
 GitHub Actionsワークフローのコードは以下です。
 
 ```yaml:.github/workflows/branch-merger.yml
@@ -203,10 +269,8 @@ jobs:
   - プルリクエストのコメントが作成されたとき (`issue_comment` イベント)
   - 他のワークフローから呼び出されたとき (`workflow_call` イベント)
 - `/merge <branch_name>` というコメントからマージ先のブランチ名を抽出します。
-- 事前にGitHub Appを作成＆インストールしておき、トークンを生成します。
-  - GitHub Appの作成方法は、[GitHubのドキュメント](https://docs.github.com/ja/apps/building-github-apps/creating-a-github-app)を参照してください。
-  - フィッツプラスでは`push`イベントによって起動する他のワークフローによって、ステージング環境へデプロイされるようになっているため、GitHub Appを利用しています。
-  - もし`push`イベントによって起動するワークフローがない場合はGitHub Appを使わずに、`GITHUB_TOKEN`を使っても問題ありません。
+- GitHub Appを使ってトークンを生成します。
+  - 先述の通り、`push`イベントで他のワークフローを起動しない場合は`GITHUB_TOKEN`で代用できます。
 - もしマージに失敗した場合は、Slackに通知します。
   - Slack通知用のトークンは、GitHub Secretsに設定しておきます。
 
@@ -256,53 +320,6 @@ jobs:
   - 呼び出し元のワークフローで権限が足りないと呼び出し先のワークフローが失敗してしまいます。
 
 他のリポジトリから呼び出せるようにすることで、Branch Mergerワークフローのメンテナンスが容易になります。
-
-## なぜ作ろうと思ったのか
-
-### ちょっとした悩み
-フィッツプラスでは、動作検証用のステージング環境を用意しています。
-開発用のブランチを`staging`ブランチにマージするとデプロイ処理が走り、ステージング環境に開発中の機能を反映させることができます。
-
-ブランチ運用のイメージは以下です。
-
-```mermaid
-gitGraph
-  checkout main
-  commit
-  branch feature1
-  branch staging
-  checkout feature1
-  commit
-  commit
-  checkout staging
-  merge feature1
-  checkout main
-  merge feature1
-  branch feature2
-  checkout feature2
-  commit
-  checkout staging
-  merge feature2
-  checkout main
-  merge feature2
-```
-
-そのため、開発中のブランチを`staging`ブランチへマージすることが多いのですが、その前に自動テストなどのCIが通るまで待つ必要があります。CIが通るまでの間、別のブランチで開発やレビューを進めています。
-
-そして、いざCIが通って開発中のブランチをマージする際、`git switch`でブランチを切り替えたり、作業中のコードを`git stash`したりする手間がかかります。それが小さな悩みでした。
-
-その小さな悩みを解決するために、今回ご紹介した「Branch Merger」ワークフローを作成しました。
-
-### メリット
-
-このワークフローによって、ブランチのマージ作業が楽になります。
-
-具体的なシチュエーションは以下です。
-
-- ローカル環境で別の開発作業を行っていても、ブランチを切り替える必要がありません。
-  - `git worktree`コマンドを使ってマージ作業を行うこともできますが、コメント1つでマージできるのは便利です。
-- DependabotやDevinが作ったプルリクエストをローカル環境にプルして、マージする手間が省けます。
-  - DependabotやRenovateなどのライブラリ更新ツールやDevinなどの生成AIが作ったプルリクエストをGitHub上からマージすることができます。
 
 ## 最後に
 
