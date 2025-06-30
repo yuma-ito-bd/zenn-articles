@@ -3,7 +3,7 @@ title: "GitHub Actionsでブランチのマージを効率化する方法"
 emoji: "📌"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["githubactions"]
-published: false
+published: true
 publication_name: "arm_techblog"
 ---
 
