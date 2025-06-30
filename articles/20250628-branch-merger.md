@@ -83,8 +83,24 @@ gitGraph
   - DependabotやRenovateなどのライブラリ更新ツールやDevinなどの生成AIが作ったプルリクエストをGitHub上からマージすることができます。
 
 
-## GitHub Actionsワークフローのコード
+## GitHub Actionsワークフローの実装
 
+### 準備：GitHub Appの作成
+
+事前にGitHub Appを作成＆インストールしておきます。
+
+GitHub Appの作成方法は、GitHubのドキュメントもしくは弊社のテックブログを参照してください。
+
+https://docs.github.com/ja/apps/building-github-apps/creating-a-github-app
+
+https://zenn.dev/arm_techblog/articles/202506-claude-code-github-actions-init#3.-%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0github-app%E3%81%AE%E4%BD%9C%E6%88%90
+
+フィッツプラスでは`push`イベントによって起動する他のワークフローによって、ステージング環境へデプロイされるようになっています。
+`git push`時にワークフローの`push`イベントを発火するため、GitHub Appを利用しています。
+
+もし`push`イベントによって起動するワークフローがない場合はGitHub Appを使わずに、`GITHUB_TOKEN`を使っても問題ありません。
+
+### ワークフローのソースコード
 GitHub Actionsワークフローのコードは以下です。
 
 ```yaml:.github/workflows/branch-merger.yml
@@ -253,10 +269,8 @@ jobs:
   - プルリクエストのコメントが作成されたとき (`issue_comment` イベント)
   - 他のワークフローから呼び出されたとき (`workflow_call` イベント)
 - `/merge <branch_name>` というコメントからマージ先のブランチ名を抽出します。
-- 事前にGitHub Appを作成＆インストールしておき、トークンを生成します。
-  - GitHub Appの作成方法は、[GitHubのドキュメント](https://docs.github.com/ja/apps/building-github-apps/creating-a-github-app)を参照してください。
-  - フィッツプラスでは`push`イベントによって起動する他のワークフローによって、ステージング環境へデプロイされるようになっているため、GitHub Appを利用しています。
-  - もし`push`イベントによって起動するワークフローがない場合はGitHub Appを使わずに、`GITHUB_TOKEN`を使っても問題ありません。
+- GitHub Appを使ってトークンを生成します。
+  - 先述の通り、`push`イベントで他のワークフローを起動しない場合は`GITHUB_TOKEN`で代用できます。
 - もしマージに失敗した場合は、Slackに通知します。
   - Slack通知用のトークンは、GitHub Secretsに設定しておきます。
 
