@@ -1,0 +1,6 @@
+---
+alwaysApply: false
+---
+- 新しい記事を作成する場合は `npm run new-article` を実行してください。
+  - ファイル名：`YYYYMMDD-<article's summary>.md`（スペースなし）
+- 記事のlintチェックは `npm run lint` を実行してください。
