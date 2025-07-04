@@ -83,13 +83,17 @@ Active Model側に標準で搭載されているバリデーションを使う�
 
 よって、名前空間つきのバリデータークラスを呼び出したい際も同様です。
 
-以下のように`'hoge/custom'`を`camelize`すると、`Hoge::Custom`です。
+以下のように`:'hoge/custom'`を`camelize`すると、`Hoge::Custom`です。
 そしてこれに`Validator`をつけることで`Hoge::CustomValidator`クラスになります。
 
 ```ruby
-p 'hoge/custom'.to_s.camelize # => "Hoge::Custom" 
-p "#{'hoge/custom'.to_s.camelize}Validator" # => "Hoge::CustomValidator"
+p :'hoge/custom'.to_s.camelize # => "Hoge::Custom" 
+p "#{:'hoge/custom'.to_s.camelize}Validator" # => "Hoge::CustomValidator"
 ```
+
+:::message
+`validates`メソッドの引数で`'hoge/custom': true`としているのでハッシュのキーは`:'hoge/custom'`です。
+:::
 
 ちなみに、ソースコードを調べていたところ、名前空間つきのバリデータークラスを指定する方法が`validates`メソッドのコメントにちゃんと説明されていました。
 
