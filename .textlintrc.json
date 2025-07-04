@@ -10,5 +10,8 @@
         "severity": "warning"
       }
     }
+  },
+  "filters": {
+    "comments": true
   }
 }
