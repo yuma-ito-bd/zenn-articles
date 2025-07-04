@@ -9,7 +9,7 @@
       "ja-space-between-half-and-full-width": {
         "severity": "warning",
         "allows": [
-          "/:::details (\\S+)/"
+          "/:::details .*/"
         ]
       }
     }
