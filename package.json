@@ -25,7 +25,7 @@
     "zenn-cli": "^0.1.85"
   },
   "devDependencies": {
-    "textlint": "^14.0.2",
+    "textlint": "^15.1.0",
     "textlint-rule-preset-ja-spacing": "^2.3.0",
     "textlint-rule-preset-japanese": "^10.0.3"
   }
