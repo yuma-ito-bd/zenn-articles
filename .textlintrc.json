@@ -7,7 +7,10 @@
     },
     "preset-ja-spacing": {
       "ja-space-between-half-and-full-width": {
-        "severity": "warning"
+        "severity": "warning",
+        "allows": [
+          "/:::details (\\S+)/"
+        ]
       }
     }
   },
