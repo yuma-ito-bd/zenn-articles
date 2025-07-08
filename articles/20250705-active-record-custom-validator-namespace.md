@@ -77,9 +77,12 @@ https://github.com/rails/rails/blob/1688ba0a32fa5ed1c56afb166639fc1a460a04fa/act
 Active Model側に標準で搭載されているバリデーションを使う際も同じ仕組みです。
 
 - `presence: true`の場合、`PresenceValidator`クラス
-  - https://github.com/rails/rails/blob/1688ba0a32fa5ed1c56afb166639fc1a460a04fa/activemodel/lib/active_model/validations/presence.rb#L5-L9
+
+https://github.com/rails/rails/blob/1688ba0a32fa5ed1c56afb166639fc1a460a04fa/activemodel/lib/active_model/validations/presence.rb#L5
+
 - `format: { with: /\A[a-zA-Z]+\z/}`の場合、`FormatValidator`クラス
-  - https://github.com/rails/rails/blob/1688ba0a32fa5ed1c56afb166639fc1a460a04fa/activemodel/lib/active_model/validations/format.rb#L7
+
+https://github.com/rails/rails/blob/1688ba0a32fa5ed1c56afb166639fc1a460a04fa/activemodel/lib/active_model/validations/format.rb#L7
 
 よって、名前空間つきのバリデータークラスを呼び出したい際も同様です。
 
