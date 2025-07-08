@@ -3,7 +3,8 @@ title: "RailsのActive Recordで名前空間付きカスタムバリデーター
 emoji: "🦔"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["rails", "activerecord"]
-published: false
+published: true
+published_at: 2025-07-08 13:00
 publication_name: "arm_techblog"
 ---
 
