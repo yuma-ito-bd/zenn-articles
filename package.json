@@ -22,7 +22,7 @@
   "homepage": "https://github.com/yuma-ito-bd/zenn-articles#readme",
   "description": "",
   "dependencies": {
-    "zenn-cli": "^0.1.85"
+    "zenn-cli": "^0.2.1"
   },
   "devDependencies": {
     "textlint": "^15.1.0",
