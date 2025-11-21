@@ -14,6 +14,8 @@ https://architecture-con.findy-tools.io/2025
 
 システムの設計は興味がある分野の一つでして、今回新しく学んだことや気になったことをまとめてみようと思います。
 
+https://x.com/yuma_ito_bd/status/1991810508148875668?s=20
+
 ## 基調講演
 - [モダナイズの現実と選択：マイクロサービスが最適解か？](https://architecture-con.findy-tools.io/2025?m=2025/session/mdl/76yLXDva)
 - [アーキテクト思考 ― チームでより良い技術的意思決定を導くリーダーシップ](https://architecture-con.findy-tools.io/2025?m=2025/session/mdl/jCaMrybb)
