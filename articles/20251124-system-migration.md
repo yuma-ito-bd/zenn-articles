@@ -3,7 +3,7 @@ title: "ストラングラーフィグパターンを用いたシステム統合
 emoji: "🖇️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["architecture", "microservices"]
-published: false
+published: true
 publication_name: "arm_techblog"
 ---
 
