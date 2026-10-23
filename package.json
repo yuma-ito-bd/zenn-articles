@@ -22,12 +22,12 @@
   "homepage": "https://github.com/yuma-ito-bd/zenn-articles#readme",
   "description": "",
   "dependencies": {
-    "zenn-cli": "^0.4.7"
+    "zenn-cli": "^0.5.8"
   },
   "devDependencies": {
-    "textlint": "^15.1.0",
-    "textlint-filter-rule-comments": "^1.2.2",
-    "textlint-rule-preset-ja-spacing": "^2.3.0",
-    "textlint-rule-preset-japanese": "^10.0.3"
+    "textlint": "^15.8.0",
+    "textlint-filter-rule-comments": "^1.3.0",
+    "textlint-rule-preset-ja-spacing": "^3.0.4",
+    "textlint-rule-preset-japanese": "^10.0.4"
   }
 }
