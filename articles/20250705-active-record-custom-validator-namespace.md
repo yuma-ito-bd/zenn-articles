@@ -59,7 +59,7 @@ class User < ApplicationRecord
 end
 ```
 
-このように記述することで、`Hoge::CustomValidator` を利用できます。
+このように記述することで、`Hoge::CustomValidator`を利用できます。
 
 ## `validates`メソッドのソースコード
 
